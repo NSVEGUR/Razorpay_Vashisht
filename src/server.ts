@@ -1,6 +1,7 @@
 import app from "./app";
+import config from "./config";
 
-const port = 3000;
+const port = config.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Listening from port ${port}`);
