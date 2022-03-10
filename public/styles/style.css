@@ -1,0 +1,21 @@
+div {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  place-items: center;
+}
+
+button {
+  padding: 10px;
+  background: #339af0;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  transition: all 0.3s;
+  box-shadow: 1px 1px 5px black;
+  background: #4dabf7;
+}
