@@ -16,49 +16,37 @@ const createOrder = catchAsync(
     var options = {
       amount: amount * 100,
       currency: "INR",
-      receipt: "rcp1",
     };
-    razorpay.orders.create(options, (err: any, order: { id: any }) => {
-      if (err) return next(new AppError("Error in creating Order", 500));
-      res.json({
-        amount,
-        orderId: order.id,
-      });
+    razorpay.orders.create(options, (err: any, order: any) => {
+      res.json(order);
     });
   }
 );
 
 const finishOrder = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { orderId } = req.body;
-    if (!orderId) return next(new AppError("Please Specify OrderID", 403));
-    razorpay.payments.fetch(orderId).then(async (paymentDocument) => {
-      const details = {
-        order_id: paymentDocument.order_id,
-        orderData: paymentDocument,
-      };
-      if (paymentDocument.status == "captured") {
-        res.status(200).json({
-          status: "success",
-          details,
-        });
-      } else {
-        res.status(402).json({
-          status: "failure",
-          details,
-        });
-      }
-    });
+    const { razorpay_payment_id } = req.body;
+    if (!razorpay_payment_id)
+      return next(new AppError("Please Specify OrderID", 403));
+    const paymentDocument = await razorpay.payments.fetch(razorpay_payment_id);
+    if (!paymentDocument) return next(new AppError("No OrderID found", 404));
+
+    const details = {
+      order_id: paymentDocument.order_id,
+      orderData: paymentDocument,
+    };
+    if (paymentDocument.status == "captured") {
+      res.status(200).json({
+        status: "success",
+        details,
+      });
+    } else {
+      res.status(402).json({
+        status: "failure",
+        details,
+      });
+    }
   }
 );
 
-const payAmount = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { amount } = req.params;
-    res.render("payment", {
-      amount,
-    });
-  }
-);
-
-export { createOrder, finishOrder, payAmount };
+export { createOrder, finishOrder };
