@@ -31,19 +31,31 @@ const finishOrder = catchAsync(
     const paymentDocument = await razorpay.payments.fetch(razorpay_payment_id);
     if (!paymentDocument) return next(new AppError("No OrderID found", 404));
 
-    const details = {
-      order_id: paymentDocument.order_id,
-      orderData: paymentDocument,
-    };
     if (paymentDocument.status == "captured") {
-      res.status(200).json({
+      // res.status(200).json({
+      //   status: "success",
+      //   details,
+      // });
+      res.render("status", {
         status: "success",
-        details,
+        id: paymentDocument.id,
+        amount: parseInt(paymentDocument.amount) / 100,
+        orderId: paymentDocument.order_id,
+        response: paymentDocument.status,
+        method: paymentDocument.method,
+        email: paymentDocument.email,
+        contact: paymentDocument.contact,
       });
     } else {
-      res.status(402).json({
+      res.render("status", {
         status: "failure",
-        details,
+        id: paymentDocument.id,
+        amount: parseInt(paymentDocument.amount) / 100,
+        orderId: paymentDocument.order_id,
+        response: paymentDocument.status,
+        method: paymentDocument.method,
+        email: paymentDocument.email,
+        contact: paymentDocument.contact,
       });
     }
   }

@@ -1,1 +1,3 @@
-console.log(amount);
+document.getElementById("print").addEventListener("click", () => {
+  window.print();
+});
